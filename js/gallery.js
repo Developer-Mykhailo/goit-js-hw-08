@@ -68,7 +68,7 @@ function createMarkup(arr) {
   return arr
     .map(({ preview, original, description }) => {
       return `<li class="gallery-item">
-                <a class="gallery-link" href="large-image.jpg">
+                <a class="gallery-link" href="${original}">
                     <img
                     class="gallery-image"
                     src="${preview}"
@@ -81,4 +81,35 @@ function createMarkup(arr) {
     .join("");
 }
 
-console.log(createMarkup(images));
+function createItemMarkup({ original, description }) {
+  return `
+      <img
+      class="gallery-image-big"
+      src="${original}"
+      alt="${description}"
+      />
+  `;
+}
+
+const galleryListElem = document.querySelector(".gallery");
+galleryListElem.insertAdjacentHTML("beforeend", createMarkup(images));
+
+galleryListElem.addEventListener("click", onImageClick);
+
+function onImageClick(event) {
+  event.preventDefault();
+  const imageClickElem = event.target.closest(".gallery-image");
+
+  if (!imageClickElem) {
+    return;
+  }
+
+  const urlBigImage = imageClickElem.dataset.source;
+
+  const imageData = images.find((image) => {
+    return image.original === urlBigImage;
+  });
+
+  const instance = basicLightbox.create(createItemMarkup(imageData));
+  instance.show();
+}
